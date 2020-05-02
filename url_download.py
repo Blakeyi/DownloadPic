@@ -2,7 +2,7 @@
 from bs4 import BeautifulSoup
 import requests
 import urllib.request
-import os
+import re
 
 headers = {'User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36'}
 
@@ -14,8 +14,14 @@ def geturlDeatil(url):
         r.encoding = 'utf-8'  # 无论原来用什么编码，都改成utf-8
         return r.text
     except Exception as e:
-        print(e)
-        return "访问网站异常"
+        try:
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)''Chrome/51.0.2704.63 Safari/537.36'}
+            r = requests.get(url, timeout=30, headers=headers, verify=False)
+            r.raise_for_status()  # 如果状态不是200，引发异常
+            r.encoding = 'utf-8'  # 无论原来用什么编码，都改成utf-8
+            return r.text
+        except Exception as e:
+            return "访问网站异常"
 
 
 def beautyText(htmlText):
@@ -28,9 +34,15 @@ def beautyText(htmlText):
 
 def childUrl(htmlText):  # 获取首页下的子网页地址
     resultUrlList = []
+    pattern = r'^http.*'
     soup = BeautifulSoup(htmlText, 'html.parser')
     for i in soup.find_all('a'):
-        resultUrlList.append(i.get('href'))
+        str1 = i.get('href')
+        if str1 is not None:
+            state = re.match(pattern, str1)
+            if state:
+                resultUrlList.append(str1)
+
     return resultUrlList
 
 
@@ -38,6 +50,8 @@ def filterPic(listurl):
     result = []
     for i in listurl:
         if (i is not None and i[:5] == "https" and i[-4:] == '.jpg'):
+            result.append(i)
+        elif (i is not None and i[:5] == "https" and i[-4:] == '.png'):
             result.append(i)
     return result
 
@@ -88,5 +102,4 @@ if __name__ == "__main__":
         listurl = beautyText(htmlText1)
         result = filterPic(listurl)
         getPrciture(result, savePath1)
-
 

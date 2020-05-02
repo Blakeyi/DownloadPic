@@ -106,14 +106,38 @@
     <property name="title">
      <string>Setting</string>
     </property>
-    <addaction name="actionsaveDirectory"/>
+    <addaction name="action_saveDir"/>
+    <addaction name="actionPreferences"/>
    </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="action_openUrl"/>
+    <addaction name="action_openDir"/>
+   </widget>
+   <addaction name="menuFile"/>
    <addaction name="menuSetting"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionsaveDirectory">
+  <action name="action_saveDir">
    <property name="text">
-    <string>saveDirectory</string>
+    <string>SaveDirectory</string>
+   </property>
+  </action>
+  <action name="action_openUrl">
+   <property name="text">
+    <string>OpenUrl</string>
+   </property>
+  </action>
+  <action name="action_openDir">
+   <property name="text">
+    <string>OpenDir</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="text">
+    <string>Preferences</string>
    </property>
   </action>
  </widget>
