@@ -86,8 +86,11 @@ def filter(listurl):
 def getPicture(listUrl, savePath):
     countDown = 0
     countDele = 0
+    str1 = listUrl[0]
+    str2 = str1.rsplit('/', 1)
+    str1 = str2[0]
     opener = urllib.request.build_opener()  # 需要采取反反盗链技术 妹子图
-    opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36')]
+    opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36'),  ('Referer', str1)]
     urllib.request.install_opener(opener)
     for i in range(len(listUrl)):
         try:
