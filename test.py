@@ -1,31 +1,54 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QLabel
-from PyQt5.QtGui import QPixmap
+
+from bs4 import BeautifulSoup
+import requests
+import urllib.request
+import re, os
+from PIL import Image
 
 
-class Example(QWidget):
-    def __init__(self):
-        super().__init__()
 
-        self.initUI()
-
-    def initUI(self):
-        hbox = QHBoxLayout(self)
-        pixmap = QPixmap('beauty.jpg')
-        lb1 = QLabel(self)
-        lb1.setPixmap(pixmap)
-        hbox.addWidget(lb1)
-        self.setLayout(hbox)
-        self.move(300, 300)
-        self.setWindowTitle('像素图控件')
-        self.show()     
-
-    def showDate(self, date):
-        self.lb1.setText(date.toString())     
+def searchDirFile(rootDir, fileList, fileType):
+    print(id(fileList))
+    for dir_or_file in os.listdir(rootDir):
+        filePath = os.path.join(rootDir, dir_or_file)
+        if os.path.isfile(filePath):
+            if filePath[-len(fileType):] == fileType:
+                fileList.append(filePath)
+                #shutil.copyfile(filePath,os.path.join(saveDir,os.path.basename(filePath)))
+            else:
+                continue
+        elif os.path.isdir(filePath):
+            searchDirFile(filePath, fileList, fileType)
+        else:
+            print('not file and dir '+os.path.basename(filePath))
 
 
-if __name__ == '__main__':
+def deleteFile(fileList):
+    countDele = 0
+    count = 0
+    print(id(fileList))
+    for path in fileList:
+        try:
+            fp = open(path, 'rb')
+            im = Image.open(fp)
+            fp.close()
+            x, y = im.size
+            if x < 1920 or y < 1080:
+                os.remove(path)
+                countDele += 1
+                count += 1
+                if count == 100:
+                    print('已删除 100 张图片')
+                    count = 0
+        except Exception:
+            continue
+    return countDele
 
-    app = QApplication(sys.argv)
-    ex = Example()
-    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    fileList = list()
+    print(id(fileList))
+    path = 'D:\\software_study\\PYTHON\\Project\\DownloadPic'
+    # searchDirFile(path, fileList, '.jpg')   
+    print('已删除 ' + str(deleteFile(fileList)) + ' 张图片')

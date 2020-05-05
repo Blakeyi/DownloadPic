@@ -18,6 +18,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("图片下载")
         MainWindow.resize(780, 553)
+        self.setWindowIcon(QIcon('favicon.ico'))
         self.defaultPath = ''
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -122,8 +123,6 @@ class Ui_MainWindow(QtWidgets.QWidget):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "图片下载"))
-        str = self.cwd+'/favicon.ico'
-        self.setWindowIcon(QIcon(str))
         self.cancle.setText(_translate("MainWindow", "取消下载"))
         self.label.setText(_translate("MainWindow", "网址："))
         self.label_2.setText(_translate("MainWindow", "                        欢迎使用图片下载工具"))

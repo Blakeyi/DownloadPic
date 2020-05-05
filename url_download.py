@@ -2,8 +2,8 @@
 from bs4 import BeautifulSoup
 import requests
 import urllib.request
-import re
-
+import re, os
+from PIL import Image
 headers = {'User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36'}
 
 
@@ -24,17 +24,34 @@ def geturlDeatil(url):
             return "访问网站异常"
 
 
-def beautyText(htmlText):
+def get_picture(htmlText):
     resultList = []
     soup = BeautifulSoup(htmlText, 'html.parser')
     for i in soup.find_all('img'):
-        resultList.append(i.get('lazysrc'))
+        if i.get('lazysrc'):
+            resultList.append(i.get('lazysrc'))
+        elif i.get('src'):
+            resultList.append(i.get('src'))
     return resultList
 
 
 def childUrl(htmlText):  # 获取首页下的子网页地址
     resultUrlList = []
     pattern = r'^http.*'
+    soup = BeautifulSoup(htmlText, 'html.parser')
+    for i in soup.find_all('a'):
+        str1 = i.get('href')
+        if str1 is not None:
+            state = re.match(pattern, str1)
+            if state:
+                resultUrlList.append(str1)
+
+    return resultUrlList
+
+
+def get_html(htmlText):  # 获取首页下的子网页地址
+    resultUrlList = []
+    pattern = r'^http.*html'
     soup = BeautifulSoup(htmlText, 'html.parser')
     for i in soup.find_all('a'):
         str1 = i.get('href')
@@ -67,17 +84,27 @@ def filter(listurl):
 
 
 def getPicture(listUrl, savePath):
-    count = 0
-    opener = urllib.request.build_opener()
+    countDown = 0
+    countDele = 0
+    opener = urllib.request.build_opener()  # 需要采取反反盗链技术 妹子图
     opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36')]
     urllib.request.install_opener(opener)
     for i in range(len(listUrl)):
         try:
-            urllib.request.urlretrieve(listUrl[i], savePath + str(i) + ".jpg")
-            count = count + 1
+            path = savePath + str(i) + ".jpg"
+            urllib.request.urlretrieve(listUrl[i], path)
+            fp = open(path, 'rb')
+            im = Image.open(fp)
+            fp.close()
+            x, y = im.size
+            if x < 1920 or y < 1080:
+                os.remove(path)
+                countDele += 1
+            else:
+                countDown += 1
         except Exception:
-            return "下载图片失败", count
-    return "下载图片成功", count
+            continue
+    return "下载图片成功", countDown, countDele
 
 
 if __name__ == "__main__":
